@@ -1,9 +1,12 @@
-import './NavBar.css'
-import { FaRegLightbulb } from "react-icons/fa";
-import {useNavigate} from "react-router-dom";
+
+import './NavBar.css';
+import { FaRegLightbulb, FaSignOutAlt, FaSignInAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function NavBar() {
     const navigate = useNavigate();
+    const isAuthorized = sessionStorage.getItem("isAuthorised") === "true";
+    const username = sessionStorage.getItem("username");
 
     const handleLogout = () => {
         fetch("http://localhost:5001/api/Auth/logout", {
@@ -21,22 +24,44 @@ function NavBar() {
     };
 
     return (
-        <div className="NavBar">
-            <button className="NavBar-Left" onClick={()=> {
-                sessionStorage.getItem("isAuthorised")==="true" ?navigate("/Home"):navigate("/");
-            }}>
-                Quiss
-                <FaRegLightbulb />
-            </button>
-            <div>
-                {sessionStorage.getItem("isAuthorised")==="true" ? (
-                    <button onClick={()=>handleLogout()} className={"SignUp-Login-Btn"}>Logout</button>
-                ):(
-                    <button onClick={()=>navigate("/SignUp")} className={"SignUp-Login-Btn"}>SignUp / Login</button>
-                )}
+        <nav className="navbar">
+            <div className="navbar-container">
+                <button 
+                    className="navbar-brand" 
+                    onClick={() => {
+                        isAuthorized ? navigate("/Home") : navigate("/");
+                    }}
+                >
+                    <span>Quiss</span>
+                    <FaRegLightbulb />
+                </button>
+                
+                <div className="navbar-auth">
+                    {isAuthorized && (
+                        <span className="navbar-username">Hello, {username}</span>
+                    )}
+                    
+                    {isAuthorized ? (
+                        <button 
+                            onClick={handleLogout} 
+                            className="navbar-btn navbar-btn-logout"
+                        >
+                            <FaSignOutAlt />
+                            Logout
+                        </button>
+                    ) : (
+                        <button 
+                            onClick={() => navigate("/SignUp")} 
+                            className="navbar-btn navbar-btn-login"
+                        >
+                            <FaSignInAlt />
+                            Login / Sign Up
+                        </button>
+                    )}
+                </div>
             </div>
-        </div>
-    )
+        </nav>
+    );
 }
 
 export default NavBar;

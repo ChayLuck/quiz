@@ -1,37 +1,97 @@
-.NavBar{
-    box-sizing: border-box;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 50px;
+/* NavBar.css - New Navigation Styling */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1rem 0;
+  z-index: 1000;
 }
 
-.NavBar-Left{
-    font-size: 24px;
-    align-items: center;
-    display: flex;
-    gap: 5px;
-    border: 0;
-    color: whitesmoke;
-    background: none;
-    cursor: pointer;
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 92%;
 }
 
-.SignUp-Login-Btn:hover{
-    background: rgb(193, 192, 192);
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  transition: var(--transition);
 }
 
-.NavBar-Left:active, .SignUp-Login-Btn:active{
-    color: white;
-    cursor: wait;
-    border-color: rgb(70,70,70);
+.navbar-brand svg {
+  font-size: 1.4rem;
 }
 
-.SignUp-Login-Btn{
-    background: none;
-    border: 2px solid whitesmoke;
-    border-radius: 10px;
-    padding: 8px;
-    color: whitesmoke;
-    cursor: pointer;
+.navbar-brand:hover {
+  color: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.navbar-auth {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar-username {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.navbar-btn {
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-btn-login {
+  background: var(--gradient);
+  color: var(--white);
+  border: none;
+  box-shadow: var(--shadow);
+}
+
+.navbar-btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-btn-logout {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+
+.navbar-btn-logout:hover {
+  background: var(--primary);
+  color: var(--white);
+}
+
+@media (max-width: 576px) {
+  .navbar-brand span {
+    font-size: 1.3rem;
+  }
+  
+  .navbar-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+  }
 }
