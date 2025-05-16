@@ -1,0 +1,52 @@
+.Result-Section {
+    margin-top: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Try-Button{
+    margin-top: 25px;
+    margin-bottom: 75px;
+    border: 2px solid whitesmoke;
+    border-radius: 10px;
+    color: whitesmoke;
+    background: none;
+    font-size: 22px;
+    padding: 8px;
+}
+
+.Try-Button:hover{
+    background: rgb(193, 192, 192);
+}
+
+.Leaderboard-Header{
+    margin-bottom: 20px;
+    text-decoration: underline;
+}
+
+.Leaderboard-List {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.Leaderboard-Name{
+    color: rgba(245, 245, 245, 0.8);
+}
+
+.Leaderboard-Sub-Propt{
+    color: rgba(245, 245, 245, 0.6);
+}
+
+@media (max-width: 750px){
+    .Result-Section {
+        margin-top: 0;
+    }
+
+    .Leaderboard-Sub-Propt{
+        display: none;
+    }
+}

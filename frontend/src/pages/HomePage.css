@@ -1,0 +1,42 @@
+.HomePage {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    margin: 150px 50px 0 50px;
+    gap: 20px;
+    padding: 16px;
+}
+
+.HomePage h2 {
+    font-size: 32px;
+}
+
+.HomePage h3 {
+    font-size: 24px;
+    font-weight: normal;
+}
+
+.HomePage button {
+    border: 2px solid whitesmoke;
+    border-radius: 10px;
+    font-size: 24px;
+    padding: 10px;
+    background: none;
+    color: whitesmoke;
+}
+.HomePage button:hover {
+    background: rgb(193, 192, 192);
+    cursor: pointer;
+}
+
+.HomePage button:active {
+    border-color: rgb(70,70,70);
+    cursor: progress;
+}
+
+@media (max-width: 750px){
+    .HomePage {
+        margin: 0;
+    }
+}

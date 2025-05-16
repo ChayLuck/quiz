@@ -1,55 +1,67 @@
-const Question = require("../models/Question");
-const User = require("../models/User");
+import QuizModel from "../models/QuizModel.js";
+import mongoose from "mongoose";
+import UsersModel from "../models/UsersModel.js";
 
-const k = 0.2;
-const e = 2.71828;
+const ScoreCalculator = (grade,time ) => {
+    if(grade === 0){
+        return 0;
+    }else{
+        const n = 100 * grade;
+        const base = Math.abs(n * Math.exp(1));
+        const expo = -0.2 * time;
+        return Math.pow(base, expo);
+    }
+}
 
-exports.startQuiz = async (req, res) => {
-  const questions = await Question.aggregate([{ $sample: { size: 10 } }]);
-  req.session = req.session || {};
-  req.session.quizStart = Date.now();
-  req.session.currentIndex = 0;
-  req.session.correctAnswers = questions.map(q => q.correct_answer);
-  req.session.questions = questions.map(({ _id, question, incorrect_answers }) => ({
-    _id, question, options: shuffle([...incorrect_answers])
-  }));
+export const postQuiz = async (req, res) => {
+    try{
+        const data = req.body;
+        const questions = data.data;
+        let score = 0;
 
-  res.json(req.session.questions.map(q => ({
-    _id: q._id,
-    question: q.question,
-    options: q.options
-  })));
-};
+        questions.forEach(item => {
+            if(!mongoose.Types.ObjectId.isValid(item.questionId)){
+                res.status(400).json({success:false , message:"One or more question id is invalid"});
+            }else{
+                if(item.selectedAnswer === item.correctAnswer) {
+                    score += ScoreCalculator(1,item.timeTaken);
+                }else{
+                    score += ScoreCalculator(0,item.timeTaken);
+                }
+            }
+        })
+        const username = data.username;
+        //const isAnyUserWithThisUsername = await UsersModel.findOne({ username});
 
-exports.answerQuestion = async (req, res) => {
-  const { index, answer } = req.body;
-  const correct = req.session.correctAnswers[index];
-  const startTime = req.session.quizStart;
-  const timeTaken = (Date.now() - startTime) / 1000;
+        //if(!isAnyUserWithThisUsername ){
+        //    return res.status(400).json({success:false ,message:"Username not found in database"});
+        //}
 
-  const grade = answer === correct ? 1 : 0;
-  const score = Math.round(100 * grade * Math.pow(e, -k * timeTaken));
+        const newQuiz = new QuizModel({
+            username: data.username ,
+            score: score
+        });
+        try{
+            await newQuiz.save();
+            res.status(200).json({success:true , score:score});
+        }catch(error){
+            res.status(500).json({success:false ,message:error.message});
+        }
 
-  if (index === 9) {
-    await User.findByIdAndUpdate(req.user.id, {
-      $push: { history: { score: score } }
-    });
-  }
+    }catch(error){
+        res.status(500).json({success: false, message: error.message});
+    }
+}
 
-  res.json({ score, grade, time: timeTaken });
-};
-
-exports.getLeaderboard = async (req, res) => {
-  const users = await User.find();
-  const allScores = users.map(u => ({
-    username: u.username,
-    bestScore: Math.max(...u.history.map(h => h.score), 0)
-  }));
-
-  allScores.sort((a, b) => b.bestScore - a.bestScore);
-  res.json(allScores.slice(0, 10));
-};
-
-function shuffle(array) {
-  return array.sort(() => Math.random() - 0.5);
+export const getLeaderBoard = async (req, res) => {
+    try{
+        const leaderBoard = await QuizModel.find().sort({score:-1});
+        if(!leaderBoard){
+            res.status(404).json({success:false , error:"Leaderboard not found"});
+        }else{
+            res.status(200).json({success:true , data:leaderBoard});
+        }
+    }catch(error){
+        res.status(500).json({success:false , error:error.message});
+    }
 }

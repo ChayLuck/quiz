@@ -1,0 +1,80 @@
+.GetPromoPage {
+    width: auto;
+    margin: 150px 50px 0 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px;
+}
+
+h1{
+    font-size: 36px;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-bottom: 16px;
+}
+
+h3{
+    font-size: 24px;
+    font-weight: normal;
+}
+
+h4{
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.GetPromoBtn{
+    width: 400px;
+    height: 50px;
+    margin: auto;
+    margin-top: 48px;
+    background: none;
+    border: 3px solid whitesmoke;
+    font-size: 24px;
+    font-weight: normal;
+    color: whitesmoke;
+    border-radius: 10px;
+}
+
+h3 button{
+    margin-top: 16px;
+    width: fit-content;
+    height: auto;
+    border: none;
+    color: whitesmoke;
+    font-size: 20px;
+    background: none;
+    text-decoration: underline;
+}
+
+.GetPromoBtn:hover,h3 button:hover{
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@media (max-width: 750px){
+    h1{
+        font-size: 28px;
+    }
+
+    h3{
+        font-size: 22px;
+    }
+
+    h4{
+        font-size: 18px;
+    }
+
+    .GetPromoBtn {
+        width: 70%;
+    }
+}
+
+@media (max-width: 450px){
+    .GetPromoBtn {
+        width: 100%;
+    }
+}

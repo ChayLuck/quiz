@@ -1,0 +1,54 @@
+.SignUpPage{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 100px;
+    gap: 25px;
+}
+
+.Button-Section{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 25px;
+}
+
+.Button-Section button{
+    box-sizing: border-box;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    border: 2px solid whitesmoke;
+    border-radius: 10px;
+    background: none;
+    color: whitesmoke;
+}
+
+.SignUpPage input, .Confirm-Button{
+    box-sizing: border-box;
+    width: 250px;
+    height: auto;
+    font-size: 20px;
+    padding: 10px;
+    border: 2px solid whitesmoke;
+    border-radius: 10px;
+    background: none;
+    color: whitesmoke;
+}
+
+.SignUpPage h2{
+    font-size: 28px;
+}
+
+.Button-Section button:hover, .Confirm-Button:hover{
+    background: rgb(193, 192, 192);
+    cursor: pointer;
+}
+
+.Button-Section button:active, .Confirm-Button:active{
+    color: white;
+    cursor: wait;
+    border-color: rgb(70,70,70);
+}
+

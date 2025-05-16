@@ -1,0 +1,37 @@
+.NavBar{
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 50px;
+}
+
+.NavBar-Left{
+    font-size: 24px;
+    align-items: center;
+    display: flex;
+    gap: 5px;
+    border: 0;
+    color: whitesmoke;
+    background: none;
+    cursor: pointer;
+}
+
+.SignUp-Login-Btn:hover{
+    background: rgb(193, 192, 192);
+}
+
+.NavBar-Left:active, .SignUp-Login-Btn:active{
+    color: white;
+    cursor: wait;
+    border-color: rgb(70,70,70);
+}
+
+.SignUp-Login-Btn{
+    background: none;
+    border: 2px solid whitesmoke;
+    border-radius: 10px;
+    padding: 8px;
+    color: whitesmoke;
+    cursor: pointer;
+}

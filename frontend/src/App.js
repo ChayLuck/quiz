@@ -1,31 +1,26 @@
-import { useState } from "react";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Quiz from "./components/Quiz";
-import Leaderboard from "./components/Leaderboard";
+import './App.css';
+import {Route, Routes} from "react-router-dom";
+import NavBar from "./pages/NavBar";
+import SignUpPage from "./pages/SignUpPage";
+import MainPage from "./pages/MainPage";
+import QuizPage from "./pages/QuizPage";
+import ResultPage from "./pages/ResultPage";
+import HomePage from "./pages/HomePage";
 
-export default function App() {
-  const [page, setPage] = useState("login");
-  const [finalScore, setFinalScore] = useState(null);
 
-  const handleFinish = (score) => {
-    setFinalScore(score);
-    setPage("leaderboard");
-  };
-
+function App() {
   return (
-    <div>
-      <h1>Quiz App</h1>
-      {page === "login" && <Login onLogin={() => setPage("quiz")} onSwitch={() => setPage("register")} />}
-      {page === "register" && <Register onSwitch={() => setPage("login")} />}
-      {page === "quiz" && <Quiz onFinish={handleFinish} />}
-      {page === "leaderboard" && (
-        <>
-          <p>Your Final Score: {finalScore}</p>
-          <Leaderboard />
-          <button onClick={() => setPage("quiz")}>Retry</button>
-        </>
-      )}
+    <div className="App">
+        <NavBar/>
+      <Routes>
+          <Route path="/SignUp" element={<SignUpPage/>} />
+          <Route path="/" element={<MainPage/>} />
+          <Route path="/Home" element={<HomePage/>} />
+          <Route path="/Quiz" element={<QuizPage/>} />
+          <Route path="/Result" element={<ResultPage/>} />
+      </Routes>
     </div>
   );
 }
+
+export default App;
