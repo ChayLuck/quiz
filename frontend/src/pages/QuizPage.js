@@ -119,6 +119,3 @@ function QuizPage() {
 }
 
 export default QuizPage;
-
-
-//TODO password hashleme bakılacak
