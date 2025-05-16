@@ -1,42 +1,308 @@
-.HomePage {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    justify-content: center;
-    margin: 150px 50px 0 50px;
-    gap: 20px;
-    padding: 16px;
+/* HomePage.css - Modern Dashboard Design */
+.home-page {
+  min-height: 100vh;
+  padding: 120px 0 60px;
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
 }
 
-.HomePage h2 {
-    font-size: 32px;
+.home-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.HomePage h3 {
-    font-size: 24px;
-    font-weight: normal;
+.home-welcome {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+  padding: 3rem;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.HomePage button {
-    border: 2px solid whitesmoke;
-    border-radius: 10px;
-    font-size: 24px;
-    padding: 10px;
-    background: none;
-    color: whitesmoke;
-}
-.HomePage button:hover {
-    background: rgb(193, 192, 192);
-    cursor: pointer;
+.home-welcome::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #4d61fc, #54e6af);
 }
 
-.HomePage button:active {
-    border-color: rgb(70,70,70);
-    cursor: progress;
+.welcome-pattern {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  opacity: 0.05;
+  background-image: radial-gradient(#4d61fc 2px, transparent 2px);
+  background-size: 20px 20px;
 }
 
-@media (max-width: 750px){
-    .HomePage {
-        margin: 0;
-    }
+.welcome-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  line-height: 1.2;
+}
+
+.welcome-title span {
+  color: #4d61fc;
+  position: relative;
+}
+
+.welcome-title span::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: rgba(77, 97, 252, 0.2);
+  z-index: -1;
+  border-radius: 4px;
+}
+
+.welcome-description {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 2rem;
+  max-width: 90%;
+  line-height: 1.6;
+}
+
+.quiz-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem;
+  transition: all 0.3s ease;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.quiz-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-card::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #54e6af, #4d61fc);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.5s ease;
+}
+
+.quiz-card:hover::before {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.quiz-icon {
+  font-size: 4rem;
+  color: #4d61fc;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.quiz-card:hover .quiz-icon {
+  transform: scale(1.1);
+}
+
+.quiz-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.quiz-description {
+  color: #6c757d;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.quiz-btn {
+  background: linear-gradient(90deg, #4d61fc, #7579e7);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(77, 97, 252, 0.3);
+}
+
+.quiz-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(77, 97, 252, 0.4);
+}
+
+.quiz-btn:active {
+  transform: translateY(-1px);
+}
+
+.quiz-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.quiz-btn:hover svg {
+  transform: translateX(5px);
+}
+
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4d61fc;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: #6c757d;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.unauthorized-message {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
+}
+
+.unauthorized-message h3 {
+  font-size: 1.5rem;
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.unauthorized-message p {
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+.unauthorized-btn {
+  background: linear-gradient(90deg, #4d61fc, #7579e7);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.unauthorized-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(77, 97, 252, 0.3);
+}
+
+@media (max-width: 992px) {
+  .home-welcome {
+    padding: 2.5rem;
+  }
+  
+  .welcome-title {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-page {
+    padding: 100px 0 40px;
+  }
+  
+  .home-welcome {
+    padding: 2rem;
+  }
+  
+  .welcome-title {
+    font-size: 1.8rem;
+  }
+  
+  .welcome-description {
+    font-size: 1rem;
+  }
+  
+  .quiz-card {
+    padding: 2rem;
+  }
+  
+  .quiz-title {
+    font-size: 1.5rem;
+  }
+  
+  .quiz-icon {
+    font-size: 3rem;
+  }
+  
+  .home-stats {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .home-container {
+    padding: 0 16px;
+  }
+  
+  .home-welcome {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .welcome-title {
+    font-size: 1.6rem;
+  }
+  
+  .quiz-card {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .quiz-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
 }

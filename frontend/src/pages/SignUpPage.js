@@ -1,169 +1,274 @@
-import './SignUpPage.css'
-import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import './SignUpPage.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaGithub, FaUser, FaEnvelope, FaLock, FaArrowRight } from "react-icons/fa";
 
 function SignUpPage() {
-    const [UserInfo, setUserInfo] = useState({
+    const [userInfo, setUserInfo] = useState({
         username: '',
         email: "",
         password: "",
         password_confirmation: "",
     });
-    const [Error, setError] = useState("");
-
-    const [isSignUpPart, setIsSignUpPart] = useState(false);
+    const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSignUpActive, setIsSignUpActive] = useState(false);
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (sessionStorage.getItem("isAuthorised") === "false") return;
-
-        const timer = setTimeout(() => {
-            fetch("http://localhost:5001/api/Auth/login/success", {
-                method: "GET",
-                credentials: "include"
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.user) {
-                        sessionStorage.setItem("isAuthorised", "true");
-                        sessionStorage.setItem("username", data.user.username || data.user.displayName);
-                        navigate("/Home");
-                    }
-                })
-                .catch(err => console.log("Github login error:", err));
-        },300)
-    }, []);
-
-
-    function handleLogin(e){
+    function handleLogin(e) {
+        e.preventDefault();
         setError("");
-        if(!UserInfo.email && !UserInfo.password){
-            setError("Input field is required.");
-        }else{
-            fetch("http://localhost:5001/api/Users/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username: UserInfo.username,
-                    password: UserInfo.password,
-                })
-            }).then(res => res.json())
-                .then(result => {
-                    if (result.success) {
-                        sessionStorage.setItem("isAuthorised", "true");
-                        sessionStorage.setItem("username", result.username);
-                        navigate("/Home");
-                    }else {
-                        setError(result.message || "Login failed");
-                    }
-                })
-                .catch(error => setError(error.message));
+        setIsLoading(true);
+        
+        if(!userInfo.username || !userInfo.password) {
+            setError("Username and password are required");
+            setIsLoading(false);
+            return;
         }
+        
+        fetch("http://localhost:5001/api/Users/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: userInfo.username,
+                password: userInfo.password,
+            })
+        }).then(res => res.json())
+            .then(result => {
+                setIsLoading(false);
+                if (result.success) {
+                    sessionStorage.setItem("isAuthorised", "true");
+                    sessionStorage.setItem("username", result.username);
+                    navigate("/Home");
+                } else {
+                    setError(result.message || "Login failed");
+                }
+            })
+            .catch(error => {
+                setIsLoading(false);
+                setError(error.message || "An error occurred. Please try again.");
+            });
     }
 
-    function handleGithub(){
+    function handleGithub() {
         window.open("http://localhost:5001/api/Auth/github", "_self")
     }
 
-    function handleSignUp(){
+    function handleSignUp(e) {
+        e.preventDefault();
         setError("");
-        if(!UserInfo.username && UserInfo.email && !UserInfo.password && !UserInfo.password_confirmation){
-            setError("Input field is required");
-        }else if(UserInfo.password !== UserInfo.password_confirmation){
-            setError("Passwords do not match");
-        }else{
-            fetch('http://localhost:5001/api/Users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: UserInfo.username,
-                    password: UserInfo.password,
-                    email: UserInfo.email,
-                })
-            }).then(res => res.json())
-                .then(result => {
-                    setError(result.message);
-                    sessionStorage.setItem("isAuthorised", "true");
-                    sessionStorage.setItem("username", UserInfo.username);
-                    navigate("/Home");
-                })
-                .catch(error => setError(error.message));
+        setIsLoading(true);
+        
+        if(!userInfo.username || !userInfo.email || !userInfo.password || !userInfo.password_confirmation) {
+            setError("All fields are required");
+            setIsLoading(false);
+            return;
         }
+        
+        if(userInfo.password !== userInfo.password_confirmation) {
+            setError("Passwords do not match");
+            setIsLoading(false);
+            return;
+        }
+        
+        fetch('http://localhost:5001/api/Users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: userInfo.username,
+                password: userInfo.password,
+                email: userInfo.email,
+            })
+        }).then(res => res.json())
+            .then(result => {
+                setIsLoading(false);
+                if (result.success || !result.message.includes("error")) {
+                    sessionStorage.setItem("isAuthorised", "true");
+                    sessionStorage.setItem("username", userInfo.username);
+                    navigate("/Home");
+                } else {
+                    setError(result.message || "Registration failed");
+                }
+            })
+            .catch(error => {
+                setIsLoading(false);
+                setError(error.message || "An error occurred. Please try again.");
+            });
     }
 
-    const resetPage = (booleanType) => {
-        setIsSignUpPart(booleanType);
-        setError("");
+    const resetForm = () => {
         setUserInfo({
             username: '',
             email: '',
             password: '',
             password_confirmation: '',
         });
+        setError("");
+    }
+
+    const switchMode = (mode) => {
+        setIsSignUpActive(mode);
+        resetForm();
     }
 
     return (
-        <div className={"SignUpPage"}>
-            <div className={"Button-Section"}>
-                <button onClick={() => resetPage(true)}>SignUp</button>
-                <button onClick={() => resetPage(false)}>Login</button>
+        <div className="auth-page">
+            <div className="auth-container">
+                <div className="auth-header">
+                    <h2>{isSignUpActive ? "Create Account" : "Welcome Back"}</h2>
+                    <p>{isSignUpActive ? "Join our quiz community today" : "Sign in to continue your quiz journey"}</p>
+                </div>
+                
+                <div className="auth-tabs">
+                    <button 
+                        className={`auth-tab ${!isSignUpActive ? 'active' : ''}`} 
+                        onClick={() => switchMode(false)}
+                    >
+                        Login
+                    </button>
+                    <button 
+                        className={`auth-tab ${isSignUpActive ? 'active' : ''}`}
+                        onClick={() => switchMode(true)}
+                    >
+                        Sign Up
+                    </button>
+                </div>
+                
+                <div className="auth-form-container">
+                    {isSignUpActive ? (
+                        <form className="auth-form" onSubmit={handleSignUp}>
+                            <div className="form-group">
+                                <label htmlFor="signup-username">Username</label>
+                                <div className="input-group">
+                                    <input
+                                        id="signup-username"
+                                        type="text"
+                                        placeholder="Choose a username (no spaces)"
+                                        value={userInfo.username}
+                                        onChange={(e) => setUserInfo({...userInfo, username: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label htmlFor="signup-email">Email</label>
+                                <div className="input-group">
+                                    <input
+                                        id="signup-email"
+                                        type="email"
+                                        placeholder="Enter your email address"
+                                        value={userInfo.email}
+                                        onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label htmlFor="signup-password">Password</label>
+                                <div className="input-group">
+                                    <input
+                                        id="signup-password"
+                                        type="password"
+                                        placeholder="Create a password"
+                                        value={userInfo.password}
+                                        onChange={(e) => setUserInfo({...userInfo, password: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label htmlFor="signup-confirm">Confirm Password</label>
+                                <div className="input-group">
+                                    <input
+                                        id="signup-confirm"
+                                        type="password"
+                                        placeholder="Confirm your password"
+                                        value={userInfo.password_confirmation}
+                                        onChange={(e) => setUserInfo({...userInfo, password_confirmation: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <button 
+                                type="submit" 
+                                className="auth-submit"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Creating Account..." : "Sign Up"}
+                            </button>
+                            
+                            {error && <div className="auth-error">{error}</div>}
+                        </form>
+                    ) : (
+                        <form className="auth-form" onSubmit={handleLogin}>
+                            <div className="form-group">
+                                <label htmlFor="login-username">Username</label>
+                                <div className="input-group">
+                                    <input
+                                        id="login-username"
+                                        type="text"
+                                        placeholder="Enter your username"
+                                        value={userInfo.username}
+                                        onChange={(e) => setUserInfo({...userInfo, username: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label htmlFor="login-password">Password</label>
+                                <div className="input-group">
+                                    <input
+                                        id="login-password"
+                                        type="password"
+                                        placeholder="Enter your password"
+                                        value={userInfo.password}
+                                        onChange={(e) => setUserInfo({...userInfo, password: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            
+                            <button 
+                                type="submit" 
+                                className="auth-submit"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Signing In..." : "Login"}
+                            </button>
+                            
+                            {error && <div className="auth-error">{error}</div>}
+                        </form>
+                    )}
+                    
+                    <div className="auth-divider">
+                        <span>Or</span>
+                    </div>
+                    
+                    <button onClick={handleGithub} className="auth-social-btn">
+                        <FaGithub />
+                        Continue with GitHub
+                    </button>
+                    
+                    <div className="auth-switch">
+                        {isSignUpActive
+                            ? "Already have an account? "
+                            : "Don't have an account? "
+                        }
+                        <span 
+                            className="auth-switch-link"
+                            onClick={() => switchMode(!isSignUpActive)}
+                        >
+                            {isSignUpActive ? "Login" : "Sign Up"}
+                        </span>
+                    </div>
+                </div>
             </div>
-
-            {isSignUpPart ? (
-                <>
-                    <h2>SignUp</h2>
-                    <input
-                        placeholder={"Username (No space)"}
-                        value={UserInfo.username}
-                        onChange={(e) => setUserInfo({...UserInfo, username: e.target.value})}
-                    />
-                    <input
-                        placeholder={"Email"}
-                        value={UserInfo.email}
-                        onChange={(e) => setUserInfo({...UserInfo, email: e.target.value})}
-                    />
-                    <input
-                        type="password"
-                        value={UserInfo.password}
-                        placeholder={"Password"}
-                        onChange={(e) => setUserInfo({...UserInfo, password: e.target.value})}
-                    />
-                    <input
-                        type="password"
-                        value={UserInfo.password_confirmation}
-                        placeholder={"Confirm Password"}
-                        onChange={(e) => setUserInfo({...UserInfo, password_confirmation: e.target.value})}
-                    />
-                    <button onClick={handleSignUp} className={"Confirm-Button"}>SignUp</button>
-                    <h3>{Error}</h3>
-                </>
-            ) : (
-                <>
-                    <h2>Login</h2>
-                    <input
-                        placeholder={"Username"}
-                        value={UserInfo.username}
-                        onChange={(e) => setUserInfo({...UserInfo, username: e.target.value})}
-                    />
-                    <input
-                        type="password"
-                        placeholder={"Password"}
-                        value={UserInfo.password}
-                        onChange={(e) => setUserInfo({...UserInfo, password: e.target.value})}
-                    />
-                    <button onClick={handleLogin} className={"Confirm-Button"}>Login</button>
-                    <h3>{Error}</h3>
-                </>
-            )}
-
-            <button onClick={handleGithub} className={"Confirm-Button"}>Login with Github</button>
         </div>
-        )
+    );
 }
 
 export default SignUpPage;
