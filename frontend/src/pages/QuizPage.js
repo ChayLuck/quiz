@@ -65,6 +65,8 @@ function QuizPage() {
             .then((res) => res.json())
             .then(result => {
                 sessionStorage.setItem('score', result.score);
+                sessionStorage.setItem('quizId', result.quizId);
+
                 navigate('/result');
             })
             .catch(error => {

@@ -1,36 +1,48 @@
 import './ResultPage.css'
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import { FaTrophy, FaMedal, FaRedo, FaHome, FaCrown } from "react-icons/fa";
+import { FaTrophy, FaRedo, FaHome } from "react-icons/fa";
 
 function ResultPage() {
     const score = sessionStorage.getItem("score")
     const username = sessionStorage.getItem("username")
-    const isAuthorised = sessionStorage.getItem("isAuthorised")==="true";
-    const [data, setData] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
+    const quizId = sessionStorage.getItem("quizId");
+    const isAuthorised = sessionStorage.getItem("isAuthorised") === "true";
+    const [quizData, setQuizData] = useState(null);
+    const [leaderboard, setLeaderboard] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Fetch specific quiz by ID
+        if (quizId) {
+            fetch(`http://localhost:5001/api/Quiz/${quizId}`)
+                .then(res => res.json())
+                .then(result => {
+                    setQuizData(result.data);
+                })
+                .catch(error => console.log(error));
+        }
+
+        // Fetch leaderboard
         fetch('http://localhost:5001/api/Quiz')
             .then(res => res.json())
             .then(data => {
-                // Sort by score descending, then by date ascending
                 const sortedData = data.data.sort((a, b) => {
                     if (b.score !== a.score) {
                         return b.score - a.score;
                     }
                     return new Date(a.createdAt) - new Date(b.createdAt);
                 });
-                setData(sortedData);
+                setLeaderboard(sortedData);
                 setIsLoading(false);
             })
             .catch(error => {
                 console.log(error);
                 setIsLoading(false);
             });
-    }, []);
+    }, [quizId]);
 
     if (!isAuthorised) {
         return (
@@ -67,117 +79,77 @@ function ResultPage() {
         return "Keep Practicing!";
     };
 
-    const getRankEmoji = (rank) => {
-        switch(rank) {
-            case 1: return "🥇";
-            case 2: return "🥈";
-            case 3: return "🥉";
-            default: return "🎯";
-        }
-    };
-
-    const getRankClass = (rank) => {
-        switch(rank) {
-            case 1: return "rank-1";
-            case 2: return "rank-2";
-            case 3: return "rank-3";
-            default: return "";
-        }
-    };
-
     return (
         <div className="result-page">
             <div className="result-container">
-                {/* Result Hero Section */}
                 <div className="result-hero">
-                    <div className="score-celebration">
-                        {getScoreEmoji(parseInt(score))}
-                    </div>
-                    <h1 className="result-title">
-                        Congratulations, <span className="result-username">{username}</span>!
-                    </h1>
-                    <div className="result-score">{score}</div>
-                    <p className="result-description">
-                        {getScoreMessage(parseInt(score))} You've completed the quiz and your score has been recorded on the leaderboard.
-                    </p>
+                    <div className="score-celebration">{getScoreEmoji(score)}</div>
+                    <h1 className="result-title">Well Done, <span className="result-username">{username}</span>!</h1>
+                    <div className="result-score">{parseInt(score)} pts</div>
+                    <p className="result-description">{getScoreMessage(score)}</p>
                     <div className="result-actions">
-                        <button 
-                            className="result-btn"
-                            onClick={() => navigate("/Home")}
-                        >
-                            <FaRedo />
-                            Try Again
-                        </button>
-                        <button 
-                            className="result-btn result-btn-secondary"
-                            onClick={() => navigate("/Home")}
-                        >
-                            <FaHome />
-                            Back to Home
-                        </button>
+                        <button className="result-btn" onClick={() => navigate("/Quiz")}> <FaRedo /> Try Again </button>
+                        <button className="result-btn result-btn-secondary" onClick={() => navigate("/Home")}> <FaHome /> Home </button>
                     </div>
                 </div>
 
-                {/* Leaderboard Section */}
+                <div className="result-questions">
+                    <h2 style={{ textAlign: 'center', margin: '2rem 0', color: '#fff' }}>📋 Answer Summary</h2>
+                    {quizData ? (
+                        quizData.questions && quizData.questions.length > 0 ? (
+                            quizData.questions.map((question, index) => (
+                                <div key={index} style={{
+                                    backgroundColor: 'white',
+                                    borderRadius: '12px',
+                                    padding: '1rem 1.5rem',
+                                    marginBottom: '1rem',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                }}>
+                                    <h4 style={{ marginBottom: '0.5rem', color: '#333' }}>
+                                        {index + 1}. {question.questionText}
+                                    </h4>
+                                    <p>
+                                        <strong>Your Answer:</strong>{" "}
+                                        <span style={{ color: question.isCorrect ? 'green' : 'red' }}>
+                                            {question.selectedAnswer}
+                                        </span>
+                                    </p>
+                                    {!question.isCorrect && (
+                                        <p><strong>Correct Answer:</strong> {question.correctAnswer}</p>
+                                    )}
+                                    <p><strong>Time Taken:</strong> {question.timeTaken.toFixed(1)}s</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p style={{ textAlign: 'center', color: 'white' }}>❗ No questions recorded for your quiz.</p>
+                        )
+                    ) : (
+                        <p style={{ textAlign: 'center', color: 'white' }}>❗ Quiz data not found.</p>
+                    )}
+                </div>
+
                 <div className="leaderboard-section">
                     <div className="leaderboard-header">
-                        <h2 className="leaderboard-title">
-                            <FaTrophy />
-                            Leaderboard
-                        </h2>
-                        <p className="leaderboard-subtitle">
-                            See how you rank among all quiz takers
-                        </p>
+                        <h2 className="leaderboard-title"><FaTrophy /> Leaderboard</h2>
+                        <p className="leaderboard-subtitle">Top Scorers</p>
                     </div>
-
                     {isLoading ? (
-                        <div className="leaderboard-loading">
-                            <p>Loading leaderboard...</p>
-                        </div>
+                        <div className="leaderboard-loading">Loading leaderboard...</div>
                     ) : (
                         <div className="leaderboard-list">
-                            {data.map((item, index) => {
-                                const rank = index + 1;
-                                const date = new Date(item.createdAt).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
-                                });
-                                const isCurrentUser = item.username === username && 
-                                                    new Date(item.createdAt).toDateString() === new Date().toDateString();
-                                
-                                return (
-                                    <div 
-                                        key={index} 
-                                        className={`leaderboard-item ${rank <= 3 ? 'top-three' : ''} ${isCurrentUser ? 'current-user' : ''}`}
-                                    >
-                                        <div className="leaderboard-medal">
-                                            {getRankEmoji(rank)}
-                                        </div>
-                                        <div className={`leaderboard-rank ${getRankClass(rank)}`}>
-                                            #{rank}
-                                        </div>
-                                        <div className="leaderboard-info">
-                                            <div className="leaderboard-username">
-                                                {item.username}
-                                                {isCurrentUser && <span> (You)</span>}
-                                            </div>
-                                            <div className="leaderboard-date">
-                                                {date}
-                                            </div>
-                                        </div>
-                                        <div className="leaderboard-score">
-                                            {item.score}
-                                        </div>
+                            {leaderboard.map((user, index) => (
+                                <div
+                                    key={user._id}
+                                    className={`leaderboard-item ${index < 3 ? "top-three" : ""} ${user.username === username ? "current-user" : ""}`}
+                                >
+                                    <div className={`leaderboard-rank rank-${index + 1}`}>{index + 1}</div>
+                                    <div className="leaderboard-info">
+                                        <div className="leaderboard-username">{user.username}</div>
+                                        <div className="leaderboard-date">{new Date(user.createdAt).toLocaleDateString()}</div>
                                     </div>
-                                );
-                            })}
-                        </div>
-                    )}
-
-                    {data.length === 0 && !isLoading && (
-                        <div className="leaderboard-loading">
-                            <p>No scores yet. Be the first to complete the quiz!</p>
+                                    <div className="leaderboard-score">{user.score.toFixed(0)}</div>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>

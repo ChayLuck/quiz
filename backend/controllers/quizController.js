@@ -9,7 +9,7 @@ const ScoreCalculator = (grade, time) => {
     } else {
         const n = 100 * grade;
         const base = Math.abs(n * Math.exp(1));
-        const expo = -0.2 * time;
+        const expo = -0.02 * time;
         return Math.pow(base, expo);
     }
 }
